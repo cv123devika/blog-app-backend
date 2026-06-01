@@ -78,6 +78,41 @@ router.get("/all", async (req, res) => {
   }
 });
 
+// =====================
+// SEARCH BLOGS
+// =====================
+router.get("/search", async (req, res) => {
+  try {
+
+    const query = req.query.query || "";
+
+    const blogs = await Blog.find({
+      $or: [
+        {
+          title: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+        {
+          description: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    }).sort({ createdAt: -1 });
+
+    res.json(blogs);
+
+  } catch (error) {
+    console.log("SEARCH BLOG ERROR:", error);
+    res.status(500).json({
+      message: "Error searching blogs",
+    });
+  }
+});
+
 
 // =====================
 // GET MY BLOGS
